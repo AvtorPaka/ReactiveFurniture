@@ -1,4 +1,6 @@
 using Management.Service.Domain.Contracts.Dal.Interfaces;
+using Management.Service.Infrastructure.Configuration.Models;
+using Management.Service.Infrastructure.Dal.Infrastructure;
 using Management.Service.Infrastructure.Dal.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDalInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
+        var postgresConnectionSection = configuration.GetSection("DalOptions:PostgreOptions");
+
+        PostgreConnectionOptions pgOptions = postgresConnectionSection.Get<PostgreConnectionOptions>() ??
+                                             throw new ArgumentException("Postgre connection options is missing.");
+
+        Postgres.AddDataSource(services, pgOptions);
+        Postgres.ConfigureTypeMapOptions();
+        Postgres.AddMigrations(services, pgOptions);
+        
         return services;
     }
 

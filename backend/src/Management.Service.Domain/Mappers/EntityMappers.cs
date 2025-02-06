@@ -11,9 +11,9 @@ public static class EntityMappers
             Price: entity.Price,
             Name: entity.Name,
             ReleaseDate: (entity.ReleaseDate.ToDateTime(new TimeOnly(0)).ToUniversalTime() <=
-                          DateTimeOffset.MaxValue.UtcDateTime)
-                ? DateTimeOffset.MinValue
-                : new DateTimeOffset(entity.ReleaseDate.ToDateTime(new TimeOnly(0)))
+                          DateTimeOffset.MaxValue)
+                ? new DateTimeOffset(entity.ReleaseDate.ToDateTime(new TimeOnly(0)))
+                : DateTimeOffset.MinValue
         );
     }
 

@@ -1,23 +1,55 @@
+using Dapper;
 using Management.Service.Domain.Contracts.Dal.Containers;
 using Management.Service.Domain.Contracts.Dal.Entities;
 using Management.Service.Domain.Contracts.Dal.Interfaces;
+using Npgsql;
 
 namespace Management.Service.Infrastructure.Dal.Repositories;
 
-public class FurnitureGoodRepository: BaseRepository, IFurnitureGoodRepository
+public class FurnitureGoodRepository : BaseRepository, IFurnitureGoodRepository
 {
-    public async Task<IReadOnlyList<FurnitureGoodEntity>> QueryFurniture(GetFurnitureGoodsContainer paramsContainer, CancellationToken cancellationToken)
+    public FurnitureGoodRepository(NpgsqlDataSource dataSource) : base(dataSource)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
+    }
 
-        return new List<FurnitureGoodEntity>
+    public async Task<IReadOnlyList<FurnitureGoodEntity>> QueryFurniture(GetFurnitureGoodsContainer paramsContainer,
+        CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+SELECT * FROM furniture_goods
+WHERE
+    name ILIKE CASE
+                WHEN (@FilterName = '') IS NOT FALSE THEN name
+                ELSE '%' || @FilterName || '%'
+           END 
+    AND
+    (price >= @MinPrice) AND
+    (price <= @MaxPrice) AND
+    (release_date >= @MinReleaseDate) AND
+    (release_date <= @MaxReleaseDate);
+";
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+        
+        
+        var sqlQueryParams = new
         {
-            // new FurnitureGoodEntity()
-            // {
-            //     Name = paramsContainer.Name,
-            //     Price = paramsContainer.PriceMaxRange,
-            //     ReleaseDate = paramsContainer.ReleaseDateMinRange
-            // }
+            FilterName = paramsContainer.Name,
+            MinPrice = paramsContainer.PriceMinRange,
+            MaxPrice = paramsContainer.PriceMaxRange == 0 ? decimal.MaxValue : paramsContainer.PriceMaxRange,
+            MinReleaseDate = paramsContainer.ReleaseDateMinRange,
+            MaxReleaseDate = paramsContainer.ReleaseDateMaxRange == DateOnly.MinValue ? DateOnly.MaxValue : paramsContainer.ReleaseDateMaxRange
+            
         };
+
+        var furnitureGoods = await connection.QueryAsync<FurnitureGoodEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlQueryParams,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        return furnitureGoods.ToList();
     }
 }

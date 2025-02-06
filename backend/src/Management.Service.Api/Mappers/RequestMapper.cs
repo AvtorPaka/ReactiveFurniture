@@ -8,7 +8,7 @@ internal static class RequestMapper
     internal static GetFurnitureGoodModel MapRequestToModel(this GetFurnitureGoodsRequest request)
     {
         return new GetFurnitureGoodModel(
-            Name: request.Name ?? string.Empty,
+            Name: request.Name?.Trim() ?? string.Empty,
             PriceMinRange: (request.PriceMinRange >= 0 && request.PriceMaxRange >= request.PriceMinRange)
                 ? request.PriceMinRange
                 : 0,

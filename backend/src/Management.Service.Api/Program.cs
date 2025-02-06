@@ -1,3 +1,5 @@
+using Management.Service.Infrastructure.DependencyInjection.Extensions;
+
 namespace Management.Service.Api;
 
 public sealed class Program
@@ -9,6 +11,7 @@ public sealed class Program
 
         await hostBuilder
                 .Build()
+                .MigrateUp()
                 .RunAsync();
     }
 }
