@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Management.Service.Domain.Extensions;
+using Management.Service.Infrastructure.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Management.Service.Api;
@@ -17,6 +19,9 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddDalInfrastructure(_configuration)
+            .AddDalRepositories()
+            .AddDomain()
             .AddControllers()
             .AddJsonOptions(options =>
             {
