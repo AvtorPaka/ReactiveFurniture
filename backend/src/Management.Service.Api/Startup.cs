@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text.Json;
+using Management.Service.Api.FiltersAttributes;
 using Management.Service.Domain.Extensions;
 using Management.Service.Infrastructure.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +39,10 @@ public sealed class Startup
 
     private static void ConfigureMvc(MvcOptions options)
     {
-        
+        options.Filters.Add(new ExceptionFilterAttribute());
+        options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.NotFound));
+        options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.BadRequest));
+        options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.Unauthorized));
     }
 
     public void Configure(IApplicationBuilder app)
