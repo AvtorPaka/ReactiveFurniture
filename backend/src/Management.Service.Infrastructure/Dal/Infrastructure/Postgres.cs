@@ -26,6 +26,8 @@ public static class Postgres
             builder =>
             {
                 builder.MapComposite<FurnitureGoodEntity>("furniture_good_v1", Translator);
+                builder.MapComposite<UserCredentialEntity>("user_credentials_v1", Translator);
+                builder.MapComposite<UserSessionEntity>("user_session_v1", Translator);
                 builder.EnableParameterLogging();
             }
         );

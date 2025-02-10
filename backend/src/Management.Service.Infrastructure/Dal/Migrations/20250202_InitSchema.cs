@@ -1,4 +1,5 @@
 using FluentMigrator;
+using FluentMigrator.Postgres;
 
 namespace Management.Service.Infrastructure.Dal.Migrations;
 
