@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
         services.AddScoped<IFurnitureGoodsService, FurnitureGoodsService>();
+        services.AddScoped<IUserCredentialsService, UserCredentialsService>();
 
         return services;
     }

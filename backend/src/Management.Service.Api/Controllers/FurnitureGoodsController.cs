@@ -28,13 +28,11 @@ public class FurnitureGoodsController : ControllerBase
     public async Task<IActionResult> GetFurnitureGoods([FromQuery] GetFurnitureGoodsRequest request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{time} | Started executing goods/get-furniture method", DateTime.Now);
         IReadOnlyList<FurnitureGoodModel> furnitureModels = await _furnitureGoodsService.GetFurniture(
             model: request.MapRequestToModel(),
             cancellationToken: cancellationToken
         );
 
-        _logger.LogInformation("{time} | Ended executing goods/get-furniture method", DateTime.Now);
         if (furnitureModels.Count == 0)
         {
             return NotFound(new ErrorResponse(

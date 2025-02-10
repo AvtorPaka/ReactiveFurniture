@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Management.Service.Api.FiltersAttributes;
+using Management.Service.Api.Middleware;
 using Management.Service.Domain.Extensions;
 using Management.Service.Infrastructure.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,7 @@ public sealed class Startup
         }
         
         app.UseRouting();
+        app.UseMiddleware<LoggingMiddleware>();
 
         app.UseEndpoints(builder =>
         {

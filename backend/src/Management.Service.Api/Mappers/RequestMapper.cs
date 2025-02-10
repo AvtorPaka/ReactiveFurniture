@@ -19,4 +19,21 @@ internal static class RequestMapper
             ReleaseDateMaxRange: request.ReleaseDateMaxRange
         );
     }
+
+    internal static RegisterUserModel MapRequestToModel(this RegisterRequest request)
+    {
+        return new RegisterUserModel(
+            Username: request.Username ?? "",
+            Email: request.Email ?? "",
+            Password: request.Password ?? ""
+        );
+    }
+
+    internal static LoginUserModel MapRequestToModel(this LoginRequest request)
+    {
+        return new LoginUserModel(
+            UserCred: request.UserCred ?? "",
+            Password: request.Password ?? ""
+        );
+    }
 }
