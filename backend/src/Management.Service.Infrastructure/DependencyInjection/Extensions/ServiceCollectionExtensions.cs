@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDalRepositories(this IServiceCollection services)
     {
         services.AddScoped<IFurnitureGoodRepository, FurnitureGoodRepository>();
+        services.AddScoped<ICredentialsRepository, CredentialsRepository>();
         return services;
     }
 }

@@ -1,6 +1,6 @@
 namespace Management.Service.Api.Contracts.Requests;
 
 public record LoginRequest(
-    string? UserCred,
+    string? Email,
     string? Password
 );

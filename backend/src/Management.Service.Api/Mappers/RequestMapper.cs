@@ -23,17 +23,23 @@ internal static class RequestMapper
     internal static RegisterUserModel MapRequestToModel(this RegisterRequest request)
     {
         return new RegisterUserModel(
-            Username: request.Username ?? "",
-            Email: request.Email ?? "",
-            Password: request.Password ?? ""
+            Username: NullOrTrim(request.Username),
+            Email: NullOrTrim(request.Email),
+            Password: NullOrTrim(request.Password)
         );
     }
 
     internal static LoginUserModel MapRequestToModel(this LoginRequest request)
     {
         return new LoginUserModel(
-            UserCred: request.UserCred ?? "",
-            Password: request.Password ?? ""
+            Email: NullOrTrim(request.Email),
+            Password: NullOrTrim(request.Password)
         );
     }
+
+    private static string NullOrTrim(string? checkString)
+    {
+        return checkString == null ? "" : checkString.Trim();
+    }
+    
 }

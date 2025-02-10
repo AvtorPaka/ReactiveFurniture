@@ -22,6 +22,7 @@ DO $$
     END 
 $$;
 ";
+        Execute.Sql(sql);
     }
 
     public override void Down()
