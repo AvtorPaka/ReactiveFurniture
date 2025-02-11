@@ -12,13 +12,11 @@ namespace Management.Service.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IUserCredentialsService _credentialsService;
-    private readonly ILogger<AuthenticationController> _logger;
 
     public AuthenticationController(IUserCredentialsService credentialsService,
         ILogger<AuthenticationController> logger)
     {
         _credentialsService = credentialsService;
-        _logger = logger;
     }
 
     [HttpPost]
@@ -55,7 +53,7 @@ public class AuthenticationController : ControllerBase
         return Ok(new LoginResponse());
     }
 
-    // Authorize 
+    // TODO: Authorize 
     [HttpPost]
     [Route("logout")]
     [ProducesResponseType<LogoutResponse>(200)]

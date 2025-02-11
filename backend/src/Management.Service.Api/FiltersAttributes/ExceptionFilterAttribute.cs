@@ -15,13 +15,53 @@ public sealed class ExceptionFilterAttribute : Attribute, IExceptionFilter
             case DomainException ex:
                 HandleBadRequest(context, ex);
                 break;
+            case UserAlreadyExistsException ex:
+                HandleConflictRequest(context, ex);
+                break;
+            case UserNotFoundException ex:
+                HandleNotFoundRequest(context, ex);
+                break;
+            case IncorrectCredentialsException ex:
+                HandleBadRequest(context, ex);
+                break;
             default:
                 HandleInternalError(context);
                 break;
         }
     }
 
-    private static void HandleBadRequest(ExceptionContext context, DomainException exception)
+    private static void HandleNotFoundRequest(ExceptionContext context, EntityNotFoundException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.NotFound,
+                Exceptions: QueryExceptionMessage(ex)
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.NotFound
+        };
+
+        context.Result = result;
+    }
+    private static void HandleConflictRequest(ExceptionContext context, EntityAlreadyExistsException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.Conflict,
+                Exceptions: QueryExceptionMessage(ex)
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.Conflict
+        };
+
+        context.Result = result;
+    }
+
+    private static void HandleBadRequest(ExceptionContext context, Exception exception)
     {
         JsonResult result = new JsonResult(
             new ErrorResponse(

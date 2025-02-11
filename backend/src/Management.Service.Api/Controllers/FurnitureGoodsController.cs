@@ -13,15 +13,14 @@ namespace Management.Service.Api.Controllers;
 public class FurnitureGoodsController : ControllerBase
 {
     private readonly IFurnitureGoodsService _furnitureGoodsService;
-    private readonly ILogger<FurnitureGoodsController> _logger;
 
     public FurnitureGoodsController(IFurnitureGoodsService furnitureGoodsService,
         ILogger<FurnitureGoodsController> logger)
     {
         _furnitureGoodsService = furnitureGoodsService;
-        _logger = logger;
     }
 
+    // TODO: Authorize 
     [HttpGet]
     [Route("get-furniture")]
     [ProducesResponseType<IEnumerable<GetFurnitureGoodsResponse>>(200)]

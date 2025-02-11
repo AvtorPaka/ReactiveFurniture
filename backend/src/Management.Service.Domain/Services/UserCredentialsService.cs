@@ -35,8 +35,8 @@ public class UserCredentialsService : IUserCredentialsService
         }
         catch (EntityAlreadyExistsException ex)
         {
-            //TODO: Remember to add
-            throw;
+            _logger.LogError(ex, "{time} | User with the same credential: {cred} already exists", DateTime.Now, registerModel.Email);
+            throw new UserAlreadyExistsException($"User with the same credential: {registerModel.Email} already exists.", ex);
         }
         catch (Exception ex)
         {
@@ -71,15 +71,15 @@ public class UserCredentialsService : IUserCredentialsService
             _logger.LogError(ex, "{time} | Invalid request parameters during RegisterNewUser call.", DateTime.Now);
             throw new DomainException("Invalid request parameters.", ex);
         }
-        catch (IncorrectUserCredentialsException ex)
+        catch (IncorrectCredentialsException ex)
         {
-            //TODO: Remember to add
+            _logger.LogError(ex, "{time} | Incorrect password credentials provided to login.", DateTime.Now);
             throw;
         }
         catch (EntityNotFoundException ex)
         {
-            //TODO: Remember to add
-            throw;
+            _logger.LogError(ex, "{time} | User with credentials: {email} could not be found.", DateTime.Now, loginModel.Email);
+            throw new UserNotFoundException($"User with credentials: {loginModel.Email} could not be found.", ex);
         }
         catch (Exception ex)
         {
@@ -100,7 +100,7 @@ public class UserCredentialsService : IUserCredentialsService
 
         if (!PasswordHasher.Verify(loginModel.Password, userEntity.Password))
         {
-            throw new IncorrectUserCredentialsException("Incorrect password credentials.");
+            throw new IncorrectCredentialsException("Incorrect password credentials provided.");
         }
 
         using var transaction = _credentialsRepository.CreateTransactionScope();
