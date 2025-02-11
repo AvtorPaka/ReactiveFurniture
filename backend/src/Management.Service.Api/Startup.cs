@@ -1,4 +1,10 @@
+using System.Net;
 using System.Text.Json;
+using Management.Service.Api.Extensions;
+using Management.Service.Api.FiltersAttributes;
+using Management.Service.Api.Middleware;
+using Management.Service.Domain.Extensions;
+using Management.Service.Infrastructure.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Management.Service.Api;
@@ -17,6 +23,11 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddAuthFilter()
+            .AddDalInfrastructure(_configuration, _hostEnvironment.IsDevelopment())
+            .AddDalRepositories()
+            .AddDomain()
+            .AddGoodsFakerService()
             .AddControllers()
             .AddJsonOptions(options =>
             {
@@ -32,7 +43,9 @@ public sealed class Startup
 
     private static void ConfigureMvc(MvcOptions options)
     {
-        
+        options.Filters.Add(new ExceptionFilterAttribute());
+        options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.NotFound));
+        options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.BadRequest));
     }
 
     public void Configure(IApplicationBuilder app)
@@ -44,6 +57,7 @@ public sealed class Startup
         }
         
         app.UseRouting();
+        app.UseMiddleware<LoggingMiddleware>();
 
         app.UseEndpoints(builder =>
         {
