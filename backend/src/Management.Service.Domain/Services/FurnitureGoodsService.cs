@@ -1,6 +1,8 @@
 using FluentValidation;
+using Management.Service.Domain.Contracts.Dal.Entities;
 using Management.Service.Domain.Contracts.Dal.Interfaces;
 using Management.Service.Domain.Exceptions;
+using Management.Service.Domain.Fakers;
 using Management.Service.Domain.Mappers;
 using Management.Service.Domain.Models;
 using Management.Service.Domain.Services.Interfaces;
@@ -20,7 +22,8 @@ public class FurnitureGoodsService : IFurnitureGoodsService
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<FurnitureGoodModel>> GetFurniture(GetFurnitureGoodModel model, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<FurnitureGoodModel>> GetFurniture(GetFurnitureGoodModel model,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -53,5 +56,25 @@ public class FurnitureGoodsService : IFurnitureGoodsService
         );
 
         return entities.MapEntitiesToModels();
+    }
+
+    public async Task MockFurnitureGoods(int ammount, CancellationToken cancellationToken)
+    {
+        FurnitureGoodEntity[] fakeEntities = GenerateFakeGoods(ammount);
+
+        using var transaction = _furnitureRepository.CreateTransactionScope();
+        
+        await _furnitureRepository.AddFurniture(
+            goods: fakeEntities,
+            cancellationToken: cancellationToken
+        );
+        
+        transaction.Complete();
+    }
+
+    private static FurnitureGoodEntity[] GenerateFakeGoods(int amount)
+    {
+        var furnitureFaker = new FurnitureGoodEntityFaker();
+        return furnitureFaker.Generate(amount).ToArray();
     }
 }

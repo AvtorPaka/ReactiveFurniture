@@ -30,7 +30,7 @@ $$;
         const string sql = @"
 DO $$
     BEGIN
-        DROP TYPE IF EXISTS calculations_v1;
+        DROP TYPE IF EXISTS furniture_good_v1;
     END
 $$;
 ";

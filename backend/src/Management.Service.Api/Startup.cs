@@ -27,6 +27,7 @@ public sealed class Startup
             .AddDalInfrastructure(_configuration)
             .AddDalRepositories()
             .AddDomain()
+            .AddGoodsFakerService()
             .AddControllers()
             .AddJsonOptions(options =>
             {

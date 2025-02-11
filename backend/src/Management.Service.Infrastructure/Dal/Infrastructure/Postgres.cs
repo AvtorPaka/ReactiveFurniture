@@ -25,9 +25,9 @@ public static class Postgres
             connectionString: connectionOptions.ConnectionString,
             builder =>
             {
-                builder.MapComposite<FurnitureGoodEntity>("furniture_good_v1", Translator);
                 builder.MapComposite<UserCredentialEntity>("user_credentials_v1", Translator);
                 builder.MapComposite<UserSessionEntity>("user_session_v1", Translator);
+                builder.MapComposite<FurnitureGoodEntity>("furniture_good_v1", Translator);
                 builder.EnableParameterLogging();
             }
         );
@@ -40,6 +40,6 @@ public static class Postgres
                 .AddPostgres()
                 .WithGlobalConnectionString(s => connectionOptions.ConnectionString)
                 .ScanIn(typeof(Postgres).Assembly).For.Migrations()
-            ).AddLogging(x => x.AddFluentMigratorConsole());
+            );
     }
 }
