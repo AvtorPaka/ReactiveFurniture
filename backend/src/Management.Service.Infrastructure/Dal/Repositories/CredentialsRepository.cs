@@ -42,7 +42,7 @@ INSERT INTO user_credentials (username, email, password)
         {
             if (ex.SqlState == "23505")
             {
-                throw new EntityAlreadyExistsException($"Entity already exists.");
+                throw new EntityAlreadyExistsException("Entity already exists.");
             }
 
             throw;
@@ -51,8 +51,22 @@ INSERT INTO user_credentials (username, email, password)
 
     public async Task CreateUserSession(UserSessionEntity entity, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        const string sqlQuery = @"
+INSERT INTO user_sessions (id, user_id, expiration_date)
+    VALUES (@Id, @UserId, @ExpirationDate);
+";
+
+        var sqlParameters = entity;
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        await connection.QueryAsync<UserSessionEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
     }
 
     public async Task<UserCredentialEntity> GetUser(string userEmail, CancellationToken cancellationToken)
@@ -74,7 +88,7 @@ SELECT * FROM user_credentials WHERE email = @Email;
                 cancellationToken: cancellationToken
             )
         );
-        
+
         var entityList = userEntity.ToList();
         if (entityList.Count == 0)
         {
@@ -84,17 +98,51 @@ SELECT * FROM user_credentials WHERE email = @Email;
         return entityList[0];
     }
 
-
-    // TODO: Rework contract
-    public async Task<bool> CheckForSessionCredentials(string sessionId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<UserSessionEntity>> GetSessionCredentials(string sessionId,
+        CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        const string sqlQuery = @"
+SELECT * FROM user_sessions
+    WHERE id = @SessionId;
+";
+
+        var sqlParameters = new
+        {
+            SessionId = sessionId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var sessionEntities = await connection.QueryAsync<UserSessionEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        return sessionEntities.ToList();
     }
 
     public async Task DeleteUserSession(string sessionId, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        const string sqlQuery = @"
+DELETE FROM user_sessions WHERE id = @SessionId;
+";
+
+        var sqlParameters = new
+        {
+            SessionId = sessionId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        await connection.QueryAsync<UserSessionEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
     }
 }

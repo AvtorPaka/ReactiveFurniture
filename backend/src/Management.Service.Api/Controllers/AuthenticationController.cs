@@ -1,5 +1,6 @@
 using Management.Service.Api.Contracts.Requests;
 using Management.Service.Api.Contracts.Responses;
+using Management.Service.Api.FiltersAttributes;
 using Management.Service.Api.Mappers;
 using Management.Service.Domain.Models;
 using Management.Service.Domain.Services.Interfaces;
@@ -13,8 +14,7 @@ public class AuthenticationController : ControllerBase
 {
     private readonly IUserCredentialsService _credentialsService;
 
-    public AuthenticationController(IUserCredentialsService credentialsService,
-        ILogger<AuthenticationController> logger)
+    public AuthenticationController(IUserCredentialsService credentialsService)
     {
         _credentialsService = credentialsService;
     }
@@ -22,6 +22,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     [Route("register")]
     [ProducesResponseType<RegisterResponse>(200)]
+    [ProducesResponseType<ErrorResponse>(409)]
     public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest request,
         CancellationToken cancellationToken)
     {
@@ -53,15 +54,16 @@ public class AuthenticationController : ControllerBase
         return Ok(new LoginResponse());
     }
 
-    // TODO: Authorize 
     [HttpPost]
     [Route("logout")]
+    [ServiceFilter(typeof(SessionAuthFilter))]
     [ProducesResponseType<LogoutResponse>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
     public async Task<IActionResult> LogOut(CancellationToken cancellationToken)
     {
         await _credentialsService.LogoutUser(
             logoutModel: new LogoutUserModel(
-                SessionId: Request.Cookies["rf-session-id"]!
+                SessionId: Request.Cookies["rf-session-id"] ?? ""
             ),
             cancellationToken: cancellationToken
         );

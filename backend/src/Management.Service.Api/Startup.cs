@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Management.Service.Api.Extensions;
 using Management.Service.Api.FiltersAttributes;
 using Management.Service.Api.Middleware;
 using Management.Service.Domain.Extensions;
@@ -22,6 +23,7 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddAuthFilter()
             .AddDalInfrastructure(_configuration)
             .AddDalRepositories()
             .AddDomain()
@@ -43,7 +45,6 @@ public sealed class Startup
         options.Filters.Add(new ExceptionFilterAttribute());
         options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.NotFound));
         options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.BadRequest));
-        options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.Unauthorized));
     }
 
     public void Configure(IApplicationBuilder app)

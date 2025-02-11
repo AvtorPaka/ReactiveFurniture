@@ -8,6 +8,6 @@ public interface ICredentialsRepository: IDbRepository
     public Task CreateUserSession(UserSessionEntity entity, CancellationToken cancellationToken);
     
     public Task<UserCredentialEntity> GetUser(string userEmail, CancellationToken cancellationToken);
-    public Task<bool> CheckForSessionCredentials(string sessionId, CancellationToken cancellationToken);
+    public Task<IReadOnlyList<UserSessionEntity>> GetSessionCredentials(string sessionId, CancellationToken cancellationToken);
     public Task DeleteUserSession(string sessionId, CancellationToken cancellationToken);
 }

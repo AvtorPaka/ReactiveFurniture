@@ -100,13 +100,13 @@ public class UserCredentialsService : IUserCredentialsService
 
         if (!PasswordHasher.Verify(loginModel.Password, userEntity.Password))
         {
-            throw new IncorrectCredentialsException("Incorrect password credentials provided.");
+            throw new IncorrectCredentialsException("Incorrect credentials provided.");
         }
 
         using var transaction = _credentialsRepository.CreateTransactionScope();
 
         string sessionId = GenerateRandomSessionId();
-        DateTimeOffset expirationDate = DateTimeOffset.UtcNow.AddHours(12);
+        DateTimeOffset expirationDate = DateTimeOffset.UtcNow.AddHours(1);
 
         await _credentialsRepository.CreateUserSession(
             entity: new UserSessionEntity
@@ -138,11 +138,6 @@ public class UserCredentialsService : IUserCredentialsService
         try
         {
             await LogoutUserUnsafe(logoutModel, cancellationToken);
-        }
-        catch (EntityNotFoundException ex)
-        {
-            //TODO: Remember to add
-            throw;
         }
         catch (Exception ex)
         {
