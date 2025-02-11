@@ -10,14 +10,14 @@ namespace Management.Service.Infrastructure.DependencyInjection.Extensions;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDalInfrastructure(this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration, bool isDevelopment)
     {
         var postgresConnectionSection = configuration.GetSection("DalOptions:PostgreOptions");
 
         PostgreConnectionOptions pgOptions = postgresConnectionSection.Get<PostgreConnectionOptions>() ??
                                              throw new ArgumentException("Postgre connection options is missing.");
 
-        Postgres.AddDataSource(services, pgOptions);
+        Postgres.AddDataSource(services, pgOptions, isDevelopment);
         Postgres.ConfigureTypeMapOptions();
         Postgres.AddMigrations(services, pgOptions);
         

@@ -24,7 +24,7 @@ public sealed class Startup
     {
         services
             .AddAuthFilter()
-            .AddDalInfrastructure(_configuration)
+            .AddDalInfrastructure(_configuration, _hostEnvironment.IsDevelopment())
             .AddDalRepositories()
             .AddDomain()
             .AddGoodsFakerService()

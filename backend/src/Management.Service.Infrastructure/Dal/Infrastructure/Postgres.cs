@@ -19,7 +19,8 @@ public static class Postgres
         SqlMapper.AddTypeHandler(new SqlDateOnlyTypeHandler());
     }
 
-    public static void AddDataSource(IServiceCollection services, PostgreConnectionOptions connectionOptions)
+    public static void AddDataSource(IServiceCollection services, PostgreConnectionOptions connectionOptions,
+        bool isDevelopment)
     {
         services.AddNpgsqlDataSource(
             connectionString: connectionOptions.ConnectionString,
@@ -28,7 +29,10 @@ public static class Postgres
                 builder.MapComposite<UserCredentialEntity>("user_credentials_v1", Translator);
                 builder.MapComposite<UserSessionEntity>("user_session_v1", Translator);
                 builder.MapComposite<FurnitureGoodEntity>("furniture_good_v1", Translator);
-                builder.EnableParameterLogging();
+                if (isDevelopment)
+                {
+                    builder.EnableParameterLogging();
+                }
             }
         );
     }
