@@ -1,0 +1,12 @@
+services:
+  web-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rf-react-client
+    image: rf.client:dev
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - ${CLIENT_PORT}:3000
