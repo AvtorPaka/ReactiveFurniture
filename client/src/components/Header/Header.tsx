@@ -11,8 +11,10 @@ import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import { Link } from "react-router-dom";
 import LogoIcon from "../Icons/LogoIcon.tsx";
 import HeaderAccountMenu from "./HeaderAccountMenu.tsx";
+import {useAppSelector} from "../../app/hooks.ts";
 
-function Header ( {logged = false} ) {
+function Header (){
+    const { user } = useAppSelector((state) => state.auth);
 
     return (
         <AppBar
@@ -53,7 +55,7 @@ function Header ( {logged = false} ) {
                         alignItems: 'center',
                         gap: [1, 1.5]
                     }}>
-                        {logged ?
+                        {user ?
                             (
                                 <HeaderAccountMenu/>
                             ) :

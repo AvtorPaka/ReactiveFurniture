@@ -1,10 +1,13 @@
-import {Box, Button,  Divider} from "@mui/material";
-import React, {useState} from "react";
-import {LoginCredentials} from "../../Interfaces/authTypes.ts";
+import {Alert, AlertTitle, Box, Button, CircularProgress, Divider} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {LoginCredentials} from "../../app/Interfaces/authTypes.ts";
 import AuthLayout from "./AuthLayout.tsx";
 import AuthLogo from "./AuthLogo.tsx";
 import AuthTextField from "./AuthTextField.tsx";
 import AuthBottomLink from "./AuthBottomLink.tsx";
+import {useAppDispatch, useAppSelector} from "../../app/hooks.ts";
+import {clearError, loginAsync} from "../../app/storeSlices/authSlice.ts";
+import {useNavigate} from "react-router-dom";
 
 
 function Login() {
@@ -12,23 +15,38 @@ function Login() {
         email: '',
         password: ''
     });
+    const dispatch = useAppDispatch();
+    const { user, isLoading, error } = useAppSelector((state) => state.auth);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            navigate("/");
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
+        dispatch(clearError());
+    }, [dispatch]);
+
 
     function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
         setLoginCredentials({
            ...loginCredentials,
            [e.target.name]: e.target.value
         });
+
+        if (error && (loginCredentials.email || loginCredentials.password)) {
+            dispatch(clearError());
+        }
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (loginCredentials.email.trim().length === 0 || loginCredentials.password.trim().length === 0) {
-            return;
-        }
-
-        console.log("Submit credentials: " + loginCredentials.email + " " + loginCredentials.password );
+        await dispatch(loginAsync(loginCredentials));
     }
 
 
@@ -44,6 +62,23 @@ function Login() {
                      flexDirection: 'column',
                      gap: 2
             }}>
+
+                {error && (
+                    <Alert
+                        severity="error"
+                        sx={{
+                            border: "1px solid",
+                            borderColor: "divider",
+                            '& .MuiAlert-message': {
+                                overflow: 'hidden'
+                            }
+                        }}
+                    >
+                        <AlertTitle>Sign-in Failed.</AlertTitle>
+                        {error}
+                    </Alert>
+                )}
+
                 <AuthTextField
                     variant="outlined"
                     id="email"
@@ -52,6 +87,7 @@ function Login() {
                     autoComplete="email"
                     value={loginCredentials.email}
                     onChange={handleOnChange}
+                    disabled={isLoading}
                 />
                 <AuthTextField
                     variant="outlined"
@@ -62,7 +98,9 @@ function Login() {
                     autoComplete="password"
                     value={loginCredentials.password}
                     onChange={handleOnChange}
+                    disabled={isLoading}
                 />
+
                 <Button
                     type="submit"
                     fullWidth
@@ -75,8 +113,11 @@ function Login() {
                         py: 1.5,
                         fontSize: '1rem',
                     }}
+                    disabled={isLoading
+                        || !loginCredentials.email.trim()
+                        || !loginCredentials.password.trim()}
                 >
-                    Sign In
+                    {isLoading ? <CircularProgress size={20} color="secondary"/> : "Sign In"}
                 </Button>
                 <Divider sx={{ width: '100%', my: 1 }}>or</Divider>
                 <AuthBottomLink

@@ -1,11 +1,15 @@
-import {IconButton, ListItemIcon, Menu, MenuItem, Tooltip} from "@mui/material";
+import {Box, CircularProgress, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography} from "@mui/material";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import React, {useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../app/hooks.ts";
+import {logoutAsync} from "../../app/storeSlices/authSlice.ts";
 
 function HeaderAccountMenu() {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const dispatch = useAppDispatch();
+    const { isLoading, user} = useAppSelector((root) => root.auth);
 
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
     function handleOpenAccountMenu(e: React.MouseEvent<HTMLButtonElement>) {
@@ -15,12 +19,11 @@ function HeaderAccountMenu() {
 
     function handleCloseAccountMenu(e: React.MouseEvent<HTMLElement>) {
         e.stopPropagation();
-        console.log("close")
         setAnchorEl(null);
     }
 
-    function handleLogout() {
-        console.log("logout")
+    async function handleLogout() {
+        await dispatch(logoutAsync())
     }
 
     return (
@@ -44,15 +47,45 @@ function HeaderAccountMenu() {
                 open={open}
                 onClose={handleCloseAccountMenu}
             >
+                {(user && !isLoading) &&
+                <Box sx={{
+                    px: 2,
+                    pb: 1,
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    marginBottom: 1
+                }}>
+                    <Typography
+                        variant="subtitle2"
+                        sx={{
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                            textTransform: 'capitalize'
+                        }}
+                    >
+                        {user.username}
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: 'text.secondary',
+                            fontSize: '0.75rem',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                        }}
+                    >
+                        {user.email}
+                    </Typography>
+                </Box> }
+
                 <MenuItem
-                    onClick={(e) => {
-                        handleCloseAccountMenu(e);
-                        handleLogout();}}
+                    onClick={handleLogout}
+                    disabled={isLoading}
                 >
                     <ListItemIcon>
                         <LogoutIcon fontSize="small"/>
                     </ListItemIcon>
-                    Sign out
+                    {isLoading ? <CircularProgress size={15} color="secondary"/> : "Sign-out"}
                 </MenuItem>
             </Menu>
         </>

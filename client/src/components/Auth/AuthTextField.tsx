@@ -4,7 +4,6 @@ function AuthTextField(props: TextFieldProps) {
     return (
         <TextField
             margin="normal"
-            required
             fullWidth
             autoFocus
             {...props}

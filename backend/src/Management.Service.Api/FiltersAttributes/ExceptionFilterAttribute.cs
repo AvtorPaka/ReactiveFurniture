@@ -13,6 +13,9 @@ public sealed class ExceptionFilterAttribute : Attribute, IExceptionFilter
             case DomainException ex:
                 ErrorRequestHandler.HandleBadRequest(context, ex);
                 break;
+            case UserUnauthenticatedException ex:
+                ErrorRequestHandler.HandleUnauthorizedRequest(context, ex);
+                break;
             case UserAlreadyExistsException ex:
                 ErrorRequestHandler.HandleConflictRequest(context, ex);
                 break;

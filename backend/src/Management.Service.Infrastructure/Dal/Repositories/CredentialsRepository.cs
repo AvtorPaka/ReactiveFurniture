@@ -69,7 +69,7 @@ INSERT INTO user_sessions (id, user_id, expiration_date)
         );
     }
 
-    public async Task<UserCredentialEntity> GetUser(string userEmail, CancellationToken cancellationToken)
+    public async Task<UserCredentialEntity> GetUserByEmail(string userEmail, CancellationToken cancellationToken)
     {
         const string sqlQuery = @"
 SELECT * FROM user_credentials WHERE email = @Email;
@@ -90,6 +90,39 @@ SELECT * FROM user_credentials WHERE email = @Email;
         );
 
         var entityList = userEntity.ToList();
+        if (entityList.Count == 0)
+        {
+            throw new EntityNotFoundException("Entity could not be found.");
+        }
+
+        return entityList[0];
+    }
+
+    public async Task<UserCredentialEntity> GetUserBySessionId(string sessionId, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+SELECT uc.id, uc.username, uc.email, uc.password 
+FROM user_sessions
+    INNER JOIN user_credentials as uc
+    ON user_sessions.user_id = uc.id
+    WHERE user_sessions.id = @SessionId;
+";
+        var sqlParameters = new
+        {
+            SessionId = sessionId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var userEntities = await connection.QueryAsync<UserCredentialEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+        
+        var entityList = userEntities.ToList();
         if (entityList.Count == 0)
         {
             throw new EntityNotFoundException("Entity could not be found.");

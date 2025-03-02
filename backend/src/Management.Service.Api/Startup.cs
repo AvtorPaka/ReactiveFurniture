@@ -28,6 +28,7 @@ public sealed class Startup
             .AddDalRepositories()
             .AddDomain()
             .AddGoodsFakerService()
+            .AddCustomCors()
             .AddControllers()
             .AddJsonOptions(options =>
             {
@@ -58,6 +59,8 @@ public sealed class Startup
         
         app.UseRouting();
         app.UseMiddleware<LoggingMiddleware>();
+
+        app.UseCors();
 
         app.UseEndpoints(builder =>
         {

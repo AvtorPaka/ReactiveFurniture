@@ -1,6 +1,6 @@
 namespace Management.Service.Api.Contracts.Responses;
 
-public record LoginResponse(
+public record CheckAuthResponse(
     string Username,
     string Email
 );

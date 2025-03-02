@@ -1,58 +1,41 @@
 using Management.Service.Api.FiltersAttributes.Utils;
-using Management.Service.Domain.Contracts.Dal.Entities;
-using Management.Service.Domain.Contracts.Dal.Interfaces;
+using Management.Service.Domain.Exceptions;
+using Management.Service.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Management.Service.Api.FiltersAttributes;
 
 public class SessionAuthFilter : IAsyncAuthorizationFilter
 {
-    private readonly ICredentialsRepository _credentialsRepository;
-    private readonly ILogger<SessionAuthFilter> _logger;
+    private readonly IUserCredentialsService _credentialsService;
 
-    public SessionAuthFilter(ICredentialsRepository credentialsRepository, ILogger<SessionAuthFilter> logger)
+    public SessionAuthFilter(IUserCredentialsService credentialsService)
     {
-        _credentialsRepository = credentialsRepository;
-        _logger = logger;
+        _credentialsService = credentialsService;
     }
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         var cancellationToken = context.HttpContext.RequestAborted;
 
-        string? sessionId = context.HttpContext.Request.Cookies["rf-session-id"];
-        if (sessionId == null)
-        {
-            ErrorRequestHandler.HandleUnauthorizedRequest(context, "Credentials were not provided.");
-            return;
-        }
-
-        IReadOnlyList<UserSessionEntity> sessionEntityList;
         try
         {
-            sessionEntityList = await _credentialsRepository.GetSessionCredentials(
-                sessionId: sessionId!,
+            var setCookieModel = await _credentialsService.CheckUserAuth(
+                sessionId: context.HttpContext.Request.Cookies["rf-session-id"],
                 cancellationToken: cancellationToken
             );
         }
-        catch (Exception ex)
+        catch (UserUnauthenticatedException ex)
         {
-            _logger.LogError(ex, "{time} | Unexpected exception occured during session authorization.", DateTime.Now);
+            ErrorRequestHandler.HandleUnauthorizedRequest(context, ex.Message);
+        }
+        catch (UserNotFoundException ex)
+        {
+            ErrorRequestHandler.HandleNotFoundRequest(context, ex);
+        }
+        catch (Exception)
+        {
             ErrorRequestHandler.HandleInternalError(context);
-            return;
-        }
-
-        if (sessionEntityList.Count == 0)
-        {
-            ErrorRequestHandler.HandleUnauthorizedRequest(context, "Invalid credentials.");
-            return;
-        }
-
-        var sessionEntity = sessionEntityList[0];
-        if (DateTimeOffset.UtcNow > sessionEntity.ExpirationDate)
-        {
-            ErrorRequestHandler.HandleUnauthorizedRequest(context, "Credentials expired.");
-            return;
         }
     }
 }

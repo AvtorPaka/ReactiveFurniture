@@ -13,7 +13,23 @@ internal static class ErrorRequestHandler
         JsonResult result = new JsonResult(
             new ErrorResponse(
                 StatusCode: HttpStatusCode.Unauthorized,
-                Exceptions: ["Credentials are invalid.", invalidScenario]
+                Exceptions: ["Invalid credentials.", invalidScenario]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.Unauthorized
+        };
+
+        context.Result = result;
+    }
+    
+    internal static void HandleUnauthorizedRequest(ExceptionContext context, UserUnauthenticatedException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.Unauthorized,
+                Exceptions: ["Invalid credentials.", ex.Message]
             )
         )
         {
@@ -25,6 +41,22 @@ internal static class ErrorRequestHandler
     }
     
     internal static void HandleNotFoundRequest(ExceptionContext context, EntityNotFoundException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.NotFound,
+                Exceptions: QueryExceptionMessage(ex)
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.NotFound
+        };
+
+        context.Result = result;
+    }
+    
+    internal static void HandleNotFoundRequest(AuthorizationFilterContext context, EntityNotFoundException ex)
     {
         JsonResult result = new JsonResult(
             new ErrorResponse(

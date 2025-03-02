@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import {Container, Box} from '@mui/material'
 import Header from "./components/Header/Header.tsx"
 import HomePage from "./components/Home/HomePage.tsx"
@@ -6,6 +6,8 @@ import Login from "./components/Auth/Login.tsx"
 import Register from "./components/Auth/Register.tsx";
 import ProductsPage from "./components/Products/ProductsPage.tsx";
 import Footer from "./components/Footer/Footer.tsx";
+import ProtectedRoute from "./components/Auth/ProtectedRoute.tsx";
+import PersistAuth from "./components/Auth/PersistAuth.tsx";
 
 
 export default function App() {
@@ -26,12 +28,31 @@ export default function App() {
                 flex: 1
             }}
             disableGutters>
+            <PersistAuth>
           <Routes>
-            <Route path="/" element={<HomePage/>}/>
-            <Route path="/sign-in" element={<Login/>}/>
-            <Route path="/register" element={<Register/>}/>
-            <Route path="/products" element={<ProductsPage/>}/>
+              <Route path="/" element={<HomePage/>}/>
+              <Route path="/sign-in" element={<Login/>}/>
+              <Route path="/register" element={<Register/>}/>
+              <Route path="/products"
+                     element={
+                  <ProtectedRoute>
+                      <ProductsPage/>
+                  </ProtectedRoute>
+              }
+              />
+
+              <Route path="*" element={
+                  <Navigate
+                      to="/"
+                      replace
+                      state={{
+                          from: '404',
+                          message: 'Page not found'
+                      }}
+                  />
+              } />
           </Routes>
+            </PersistAuth>
         </Container>
         <Footer/>
         </Box>

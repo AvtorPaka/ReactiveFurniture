@@ -30,8 +30,25 @@ public class AuthenticationController : ControllerBase
             registerModel: request.MapRequestToModel(),
             cancellationToken: cancellationToken
         );
-        
+
         return Ok(new RegisterResponse());
+    }
+
+    [HttpGet]
+    [Route("check-auth")]
+    [ProducesResponseType<CheckAuthResponse>(200)]
+    [ProducesResponseType<ErrorResponse>(401)]
+    public async Task<IActionResult> CheckAuthentication(CancellationToken cancellationToken)
+    {
+        SetCookieModel model = await _credentialsService.CheckUserAuth(
+            sessionId: HttpContext.Request.Cookies["rf-session-id"],
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new CheckAuthResponse(
+            Username: model.Username,
+            Email: model.Email
+        ));
     }
 
     [HttpPost]
@@ -43,7 +60,7 @@ public class AuthenticationController : ControllerBase
             loginModel: request.MapRequestToModel(),
             cancellationToken: cancellationToken
         );
-        
+
         Response.Cookies.Append("rf-session-id", setCookieModel.SessionId, new CookieOptions
         {
             Expires = setCookieModel.ExpirationDate,
@@ -51,7 +68,10 @@ public class AuthenticationController : ControllerBase
             Domain = Request.Host.Host
         });
 
-        return Ok(new LoginResponse());
+        return Ok(new LoginResponse(
+            Email: setCookieModel.Email,
+            Username: setCookieModel.Username
+        ));
     }
 
     [HttpPost]
@@ -67,7 +87,7 @@ public class AuthenticationController : ControllerBase
             ),
             cancellationToken: cancellationToken
         );
-        
+
         Response.Cookies.Delete("rf-session-id", new CookieOptions
         {
             IsEssential = true,

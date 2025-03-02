@@ -9,4 +9,6 @@ public interface IUserCredentialsService
     public Task<SetCookieModel> LoginUser(LoginUserModel loginModel, CancellationToken cancellationToken);
 
     public Task LogoutUser(LogoutUserModel logoutModel, CancellationToken cancellationToken);
+
+    public Task<SetCookieModel> CheckUserAuth(string? sessionId, CancellationToken cancellationToken);
 }
