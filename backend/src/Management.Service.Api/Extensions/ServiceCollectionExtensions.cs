@@ -20,7 +20,7 @@ internal static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddCustomCors(this IServiceCollection services)
     {
-        const int clientPort = 3000;
+        string clientPort = Environment.GetEnvironmentVariable("CLIENT_PORT") ?? "3000";
         string[] clientOrigins = [$"http://host.docker.internal:{clientPort}", $"http://localhost:{clientPort}", $"http://172.17.0.1:{clientPort}"]; 
             
         services.AddCors(options =>

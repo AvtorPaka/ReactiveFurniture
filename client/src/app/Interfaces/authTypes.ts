@@ -46,6 +46,6 @@ export class AuthenticationError extends Error {
     }
 }
 
-export const apiUrl: string = import.meta.env.VITE_API_BASE_URL || "http://rf-backend-api:8080";
+export const apiUrl: string = import.meta.env.VITE_API_BASE_URL || "http://localhost:7179";
 
 export const sessionKey = "rf-session-id";
