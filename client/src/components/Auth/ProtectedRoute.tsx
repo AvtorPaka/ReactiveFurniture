@@ -4,10 +4,10 @@ import React from "react";
 import {Box, CircularProgress} from "@mui/material";
 
 function ProtectedRoute( { children } : { children: React.ReactNode}) {
-    const { user, isLoading } = useAppSelector((state) => state.auth);
+    const { user, isCheckLoading } = useAppSelector((state) => state.auth);
     const location = useLocation();
 
-    if (isLoading) {
+    if (isCheckLoading) {
         return (
             <Box
                 display="flex"

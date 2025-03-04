@@ -7,7 +7,6 @@ import Register from "./components/Auth/Register.tsx";
 import ProductsPage from "./components/Products/ProductsPage.tsx";
 import Footer from "./components/Footer/Footer.tsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute.tsx";
-import PersistAuth from "./components/Auth/PersistAuth.tsx";
 
 
 export default function App() {
@@ -28,31 +27,29 @@ export default function App() {
                 flex: 1
             }}
             disableGutters>
-            <PersistAuth>
-          <Routes>
-              <Route path="/" element={<HomePage/>}/>
-              <Route path="/sign-in" element={<Login/>}/>
-              <Route path="/register" element={<Register/>}/>
-              <Route path="/products"
-                     element={
-                  <ProtectedRoute>
-                      <ProductsPage/>
-                  </ProtectedRoute>
-              }
-              />
-
-              <Route path="*" element={
-                  <Navigate
-                      to="/"
-                      replace
-                      state={{
-                          from: '404',
-                          message: 'Page not found'
-                      }}
+              <Routes>
+                  <Route path="/" element={<HomePage/>}/>
+                  <Route path="/sign-in" element={<Login/>}/>
+                  <Route path="/register" element={<Register/>}/>
+                  <Route path="/products"
+                         element={
+                      <ProtectedRoute>
+                          <ProductsPage/>
+                      </ProtectedRoute>
+                  }
                   />
-              } />
-          </Routes>
-            </PersistAuth>
+
+                  <Route path="*" element={
+                      <Navigate
+                          to="/"
+                          replace
+                          state={{
+                              from: '404',
+                              message: 'Page not found'
+                          }}
+                      />
+                  } />
+              </Routes>
         </Container>
         <Footer/>
         </Box>

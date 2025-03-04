@@ -8,6 +8,7 @@ internal static class ResponseMapper
     private static GetFurnitureGoodsResponse MapModelToResponse(this FurnitureGoodModel model)
     {
         return new GetFurnitureGoodsResponse(
+            Id: model.Id,
             Price: model.Price,
             Name: model.Name,
             ReleaseDate: model.ReleaseDate

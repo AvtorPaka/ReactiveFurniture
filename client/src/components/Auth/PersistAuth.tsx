@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/hooks.ts";
 import {Box, CircularProgress} from "@mui/material";
 import {checkAuthAsync} from "../../app/storeSlices/authSlice.ts";
@@ -14,22 +14,23 @@ function checkCookieExists(cookieName: string): boolean {
 function PersistAuth( { children } : { children: React.ReactNode}) {
     const dispatch = useAppDispatch();
     const { isCheckLoading } = useAppSelector((state) => state.auth);
+    const [ initialCheckLoading, setInitialCheckLoading ] = useState(true);
 
     useEffect(() => {
         const checkAuth = async() => {
-            if (!checkCookieExists(sessionKey)) {
-                return;
+            if (checkCookieExists(sessionKey)) {
+                await dispatch(checkAuthAsync());
             }
 
-            await dispatch(checkAuthAsync());
+            setInitialCheckLoading(false);
         }
 
         checkAuth().catch(console.error);
     }, [dispatch]);
 
-    if (isCheckLoading) {
+    if (initialCheckLoading || isCheckLoading) {
         return (
-            <Box minHeight="90vh" display="flex" justifyContent="center" alignItems="center">
+            <Box minHeight="100vh" display="flex" justifyContent="center" alignItems="center">
                 <CircularProgress color="secondary"/>
             </Box>
         );

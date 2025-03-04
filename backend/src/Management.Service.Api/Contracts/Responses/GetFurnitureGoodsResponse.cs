@@ -1,7 +1,8 @@
 namespace Management.Service.Api.Contracts.Responses;
 
 public record GetFurnitureGoodsResponse(
-    decimal Price,
+    long Id,
     string Name,
+    decimal Price,
     DateTimeOffset ReleaseDate
 );

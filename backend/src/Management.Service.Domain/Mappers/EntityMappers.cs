@@ -8,6 +8,7 @@ public static class EntityMappers
     public static FurnitureGoodModel MapEntityToModel(this FurnitureGoodEntity entity)
     {
         return new FurnitureGoodModel(
+            Id: entity.Id,
             Price: entity.Price,
             Name: entity.Name,
             ReleaseDate: (entity.ReleaseDate.ToDateTime(new TimeOnly(0)).ToUniversalTime() <=

@@ -5,15 +5,9 @@ import {
     LoginResponse,
     RegisterCredentials, sessionKey
 } from "../Interfaces/authTypes.ts";
-import api, {ApiError} from "./api.ts";
+import api, {ApiError, newAbortSignal} from "./api.ts";
 import axios, {AxiosError} from "axios";
 
-function newAbortSignal(timeoutMs: number) {
-    const abortController = new AbortController();
-    setTimeout(() => abortController.abort(), timeoutMs || 0);
-
-    return abortController.signal;
-}
 
 function validateLoginRequest(request: LoginCredentials) {
     if (!request.email.trim()) {
