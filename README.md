@@ -11,13 +11,13 @@
 ### 1. Download sources
 
 ```sh
-git clone git@github.com:AvtorPaka/ReactFurniture.git
+git clone git@github.com:AvtorPaka/ReactiveFurniture.git
 ```
 
-### 2. Create and fill .env file as it shown in [template](https://github.com/AvtorPaka/ReactFurniture/blob/master/docker-compose/.env.template)
+### 2. Create and fill .env file as it shown in [template](https://github.com/AvtorPaka/ReactiveFurniture/blob/master/docker-compose/.env.template)
 
 ```sh
-cd ReactFurniture/docker-compose/ && touch .env &&
+cd ReactiveFurniture/docker-compose/ && touch .env &&
 echo "PG_DB=react-furniture
 PG_PSWD=12345
 PG_USER=postgres
@@ -44,5 +44,5 @@ CLIENT_PORT=<Exposed port for client>" > .env
 ### 3. Deploy
 
 ```sh
-cd ReactFurniture/docker-compose/ && docker compose up -d
+cd ReactiveFurniture/docker-compose/ && docker compose up -d
 ```
