@@ -37,7 +37,22 @@ services:
       - pg-data:/var/lib/postgresql/data/pgdata
     networks:
       - rf-network
-      
+  
+  web-client:
+    build:
+      context: ./../client
+      dockerfile: Dockerfile
+    container_name: rf-react-client
+    image: rf.client:1.0
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - rf-network
+    ports:
+      - ${CLIENT_PORT}:3000
+    depends_on:
+      - backend
       
 volumes:
   pg-data:
