@@ -101,7 +101,7 @@ public class UserCredentialsService : IUserCredentialsService
         using var transaction = _credentialsRepository.CreateTransactionScope();
 
         string sessionId = GenerateRandomSessionId();
-        DateTimeOffset expirationDate = DateTimeOffset.UtcNow.AddHours(1);
+        DateTimeOffset expirationDate = DateTimeOffset.UtcNow.AddHours(12);
 
         await _credentialsRepository.CreateUserSession(
             entity: new UserSessionEntity

@@ -1,6 +1,8 @@
 import {ProductsFilter, ProductsState} from "../Interfaces/productsTypes.ts";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {ProductsService} from "../services/ProductsService.ts";
+import {AuthenticationError} from "../Interfaces/authTypes.ts";
+import {logoutAsync} from "./authSlice.ts";
 
 const initialState: ProductsState =  {
     products: [],
@@ -10,11 +12,14 @@ const initialState: ProductsState =  {
 
 export const getProductsAsync = createAsyncThunk(
     'products/get',
-    async (request: ProductsFilter, { rejectWithValue }) => {
+    async (request: ProductsFilter, { dispatch, rejectWithValue }) => {
         try {
             return await ProductsService.getProducts(request);
         }
         catch (error) {
+            if (error instanceof AuthenticationError) {
+                await dispatch(logoutAsync());
+            }
             return rejectWithValue(error instanceof Error ? error.message : "Unable to get products list.");
         }
     }

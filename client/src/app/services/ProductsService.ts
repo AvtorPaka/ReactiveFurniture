@@ -27,7 +27,7 @@ function ConstructRequestUrl(request: ProductsFilter): string {
         delimiter = "&";
     }
     if (request.ReleaseYearMaxRange) {
-        requestUrl = requestUrl + delimiter + `ReleaseDateMaxRange=${request.ReleaseYearMaxRange}-01-01`;
+        requestUrl = requestUrl + delimiter + `ReleaseDateMaxRange=${request.ReleaseYearMaxRange}-12-31`;
     }
 
     return requestUrl;
@@ -46,14 +46,7 @@ export const ProductsService =  {
                 }
             )
 
-            return response.data.map(
-                (p: Product) => {
-                    return {
-                        ...p,
-                        release_date: p.release_date.split("T")[0]
-                    }
-                }
-            );
+            return response.data;
         }
         catch (error) {
             if (axios.isAxiosError(error)) {
@@ -61,11 +54,13 @@ export const ProductsService =  {
 
                 if (axError.response) {
                     if (axError.response.status === 401) {
-                        throw new AuthenticationError("User unauthenticated.");
+                        throw new AuthenticationError("User unauthenticated. Session expired.");
                     } else if (axError.response.status === 400) {
                         throw new GetProductsError("Invalid products filter parameters.");
                     } else if (axError.response.status === 500) {
                         throw new GetProductsError("Internal server error. Working on this.");
+                    } else if (axError.response.status === 404) {
+                        throw new GetProductsError("No such products.")
                     }
                 }
                 if (axError.request) {

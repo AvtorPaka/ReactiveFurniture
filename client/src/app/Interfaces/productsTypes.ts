@@ -14,10 +14,15 @@ export interface ProductsState {
 
 export interface ProductsFilter {
     Name: string | null,
-    PriceMinRange: number | null,
-    PriceMaxRange: number | null,
-    ReleaseYearMinRange: number | null,
-    ReleaseYearMaxRange: number | null
+    PriceMinRange?: number,
+    PriceMaxRange?: number,
+    ReleaseYearMinRange?: number,
+    ReleaseYearMaxRange?: number
+}
+
+export interface ProductsFilterViolations {
+    priceViolation: string | null,
+    dateViolation: string | null
 }
 
 
